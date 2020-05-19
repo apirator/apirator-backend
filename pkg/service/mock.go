@@ -10,20 +10,20 @@ import (
 )
 
 type MockService struct {
-	repository v1alpha1.APIMockInterface
+	repository v1alpha1.ApiratorV1alpha1Client
 }
 
 const (
-	Ingress   = "ingress"
-	Namespace = "namespace"
-	CreatedOnTag = "CreatedOn"
+	Ingress        = "ingress"
+	Namespace      = "namespace"
+	CreatedOnTag   = "CreatedOn"
 	CreatedOnValue = "apirator-backend"
 )
 
-func (ms *MockService) Add(namespace string,mock *ms.Mock) (*ms.Mock, error) {
-	api := toResource(namespace,mock)
+func (ms *MockService) Add(namespace string, mock *ms.Mock) (*ms.Mock, error) {
+	api := toResource(namespace, mock)
 	co := v1.CreateOptions{}
-	k8sMock, err := ms.repository.Create(context.TODO(), api, co)
+	k8sMock, err := ms.repository.APIMocks(namespace).Create(context.TODO(), api, co)
 	if err != nil {
 		return nil, errors.Wrap(err)
 	}
@@ -32,14 +32,14 @@ func (ms *MockService) Add(namespace string,mock *ms.Mock) (*ms.Mock, error) {
 
 func (ms *MockService) List(namespace string) ([]*ms.Mock, error) {
 	lo := v1.ListOptions{}
-	k8sMocks, err := ms.repository.List(context.TODO(), lo)
+	k8sMocks, err := ms.repository.APIMocks(namespace).List(context.TODO(), lo)
 	if err != nil {
 		return nil, errors.Wrap(err)
 	}
 	return toDomainList(k8sMocks), nil
 }
 
-func NewMockService(repo v1alpha1.APIMockInterface) *MockService {
+func NewMockService(repo v1alpha1.ApiratorV1alpha1Client) *MockService {
 	return &MockService{repository: repo}
 }
 
@@ -47,7 +47,7 @@ func NewMockService(repo v1alpha1.APIMockInterface) *MockService {
 // Internal functions
 // =====================================================================================================================
 
-func toResource(namespace string,mock *ms.Mock) *apiratorv1alpha1.APIMock {
+func toResource(namespace string, mock *ms.Mock) *apiratorv1alpha1.APIMock {
 	selector := make(map[string]string)
 	selector[Ingress] = mock.Selector.Ingress
 	selector[Namespace] = mock.Selector.Namespace
@@ -62,15 +62,15 @@ func toResource(namespace string,mock *ms.Mock) *apiratorv1alpha1.APIMock {
 		Host:     mock.Host,
 	}
 	api := &apiratorv1alpha1.APIMock{
-		TypeMeta:   v1.TypeMeta{},
+		TypeMeta: v1.TypeMeta{},
 		ObjectMeta: v1.ObjectMeta{
 			Namespace: namespace,
-			Name: mock.Name,
+			Name:      mock.Name,
 			Annotations: map[string]string{
-				CreatedOnTag : CreatedOnValue,
+				CreatedOnTag: CreatedOnValue,
 			},
 		},
-		Spec:       sp,
+		Spec: sp,
 	}
 	return api
 }
