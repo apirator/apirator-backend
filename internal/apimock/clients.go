@@ -2,15 +2,20 @@ package apimock
 
 import (
 	"github.com/apirator/apirator-backend/internal/errors"
+	"github.com/apirator/apirator-backend/pkg/generated/clientset/versioned"
 	"github.com/apirator/apirator-backend/pkg/generated/clientset/versioned/typed/apirator.io/v1alpha1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"os"
 )
 
-func NewApiratorClient(config *rest.Config) (*v1alpha1.ApiratorV1alpha1Client, error) {
-	ic, err := v1alpha1.NewForConfig(config)
+func NewApiratorClient(config *rest.Config) (*versioned.Clientset, error) {
+	ic, err := versioned.NewForConfig(config)
 	return ic, errors.Wrap(err)
+}
+
+func NewMockClient(clientset *versioned.Clientset) v1alpha1.ApiratorV1alpha1Interface {
+	return clientset.ApiratorV1alpha1()
 }
 
 func NewRestConfig() (*rest.Config, error) {

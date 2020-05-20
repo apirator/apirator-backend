@@ -10,7 +10,7 @@ import (
 )
 
 type MockService struct {
-	repository v1alpha1.ApiratorV1alpha1Client
+	repository v1alpha1.ApiratorV1alpha1Interface
 }
 
 const (
@@ -39,7 +39,7 @@ func (ms *MockService) List(namespace string) ([]*ms.Mock, error) {
 	return toDomainList(k8sMocks), nil
 }
 
-func NewMockService(repo v1alpha1.ApiratorV1alpha1Client) *MockService {
+func NewMockService(repo v1alpha1.ApiratorV1alpha1Interface) *MockService {
 	return &MockService{repository: repo}
 }
 
