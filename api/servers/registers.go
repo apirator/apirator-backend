@@ -5,18 +5,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Register struct {
+type RegisterAPI struct {
 	MockHandler *handlers.MockHandler
 	echo        *echo.Echo
 }
 
-func (r *Register) registerAPIs() {
-	r.echo.POST("/api/{namespace}/mocks", r.MockHandler.AddMock)
-	r.echo.GET("/api/{namespace}/mocks", r.MockHandler.ListMock)
+func (r *RegisterAPI) registerAPIs() {
+	r.echo.POST("/api/:namespace/mocks", r.MockHandler.AddMock)
+	r.echo.GET("/api/:namespace/mocks", r.MockHandler.ListMock)
 }
 
-func NewRegister(handler *handlers.MockHandler, echo *echo.Echo) *Register {
-	return &Register{
+func NewRegister(handler *handlers.MockHandler, echo *echo.Echo) *RegisterAPI {
+	return &RegisterAPI{
 		MockHandler: handler,
 		echo:        echo,
 	}

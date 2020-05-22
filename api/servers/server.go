@@ -1,7 +1,6 @@
 package servers
 
 import (
-	"github.com/apirator/apirator-backend/api/handlers"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -9,11 +8,12 @@ import (
 
 type Server struct {
 	server   *echo.Echo
-	handlers *handlers.MockHandler
+	register *RegisterAPI
 }
 
 func (s *Server) Run() {
 	e := s.server
+	s.register.registerAPIs()
 	e.Use(middleware.Logger())
 	p := prometheus.NewPrometheus("echo", nil)
 	p.Use(e)
@@ -24,9 +24,9 @@ func (s *Server) Run() {
 	e.Logger.Fatal(e.Start(":9999"))
 }
 
-func NewServer(echo *echo.Echo, handler *handlers.MockHandler) *Server {
+func NewServer(echo *echo.Echo, register *RegisterAPI) *Server {
 	return &Server{
 		server:   echo,
-		handlers: handler,
+		register: register,
 	}
 }

@@ -76,9 +76,12 @@ func toResource(namespace string, mock *ms.Mock) *apiratorv1alpha1.APIMock {
 }
 
 func toDomainList(list *apiratorv1alpha1.APIMockList) []*ms.Mock {
-	result := make([]*ms.Mock, 10)
+	result := make([]*ms.Mock, len(list.Items))
 	for _, api := range list.Items {
-		result = append(result, toDomain(api))
+		if len(api.Name) != 0 {
+			result = append(result, toDomain(api))
+		}
+
 	}
 	return result
 }
@@ -96,6 +99,7 @@ func toDomain(api apiratorv1alpha1.APIMock) *ms.Mock {
 		},
 		Host:       api.Spec.Host,
 		Definition: api.Spec.Definition,
+		Name:       api.Name,
 	}
 
 }
