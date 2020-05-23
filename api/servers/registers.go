@@ -6,19 +6,22 @@ import (
 )
 
 type RegisterAPI struct {
-	MockHandler *handlers.MockHandler
+	mockHandler *handlers.MockHandler
 	echo        *echo.Echo
+	healthCheck *handlers.HealthCheckHandler
 }
 
 func (r *RegisterAPI) registerAPIs() {
-	r.echo.POST("/api/:namespace/mocks", r.MockHandler.AddMock)
-	r.echo.GET("/api/:namespace/mocks", r.MockHandler.ListMock)
+	r.echo.POST("/api/:namespace/mocks", r.mockHandler.AddMock)
+	r.echo.GET("/api/:namespace/mocks", r.mockHandler.ListMock)
+	r.echo.GET("/health", r.healthCheck.Health)
 }
 
-func NewRegister(handler *handlers.MockHandler, echo *echo.Echo) *RegisterAPI {
+func NewRegister(handler *handlers.MockHandler, echo *echo.Echo, health *handlers.HealthCheckHandler) *RegisterAPI {
 	return &RegisterAPI{
-		MockHandler: handler,
+		mockHandler: handler,
 		echo:        echo,
+		healthCheck: health,
 	}
 }
 
