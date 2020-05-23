@@ -1,6 +1,7 @@
 package servers
 
 import (
+	infra "github.com/apirator/apirator-backend/internal/logger"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -12,16 +13,19 @@ type Server struct {
 }
 
 func (s *Server) Run() {
-	e := s.server
+	infra.Logger.Info("Starting apirator backend...")
 	s.register.registerAPIs()
-	e.Use(middleware.Logger())
-	p := prometheus.NewPrometheus("echo", nil)
-	p.Use(e)
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	infra.Logger.Info("Configuring middlewares...")
+	s.server.Use(middleware.Logger())
+	p := prometheus.NewPrometheus("apirator_backend", nil)
+	p.Use(s.server)
+	s.server.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
-	e.Logger.Fatal(e.Start(":9999"))
+	infra.Logger.Info("Middlewares configured successfully.")
+	infra.Logger.Info("apirator backend started")
+	s.server.Logger.Fatal(s.server.Start(":9999"))
 }
 
 func NewServer(echo *echo.Echo, register *RegisterAPI) *Server {

@@ -11,5 +11,5 @@ RUN go get github.com/google/wire/cmd/wire && \
 # Run Image
 FROM scratch
 COPY --from=builder /apirator-backend/bin/application /apirator-backend/bin
-EXPOSE 8000
+EXPOSE 9999
 ENTRYPOINT ["./apirator-backend/bin"]
